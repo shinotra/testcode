@@ -11,7 +11,10 @@ use ManageCSV;
 #binmode(STDOUT, ":utf8");
 
 print "Content-type: text/html \n\n";
-print "<HTML><BODY>";
+print "<?xml version=\"1.0\" encoding=\"UTF-8\">";
+print "<HTML>";
+print "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />";
+print "<BODY>";
 
 my $obj = new ManageCSV();
 
