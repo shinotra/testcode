@@ -1,0 +1,3 @@
+id,date,user,information
+1572,2016/8/28,B,フローの定義そのものはJSON形式だが、GUIのデザイナーを使って簡単にAPIAppsを追加し、処理をつなげていくことができる。
+2127,2016/8/14,A,StreamAnalyticsは、ストリーミングデータをほぼリアルタイムで分析・処理を行い、出力できるサービスだ。BLOBストレージ上のファイルやEventHubsからデータを入力し、SQLに似たStreamAnalyticsのクエリ言語を用いて処理し、再度BLOBやEventHubsに出力してストリーミングのパイプラインをつなげることができるほか、SQLDatabaseに保存することも可能だ。
