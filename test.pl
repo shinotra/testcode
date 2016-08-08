@@ -11,8 +11,10 @@ my $obj = new ManageCSV();
 $obj->set_datapath('data/sampledatas.csv');
 $obj->read_CSV;
 
-print Dumper $obj;
-#exit;
+$obj->get_unxpired_lines();
+
+#print Dumper $obj;
+exit;
 
 $obj->set_data(2,'user','C');
 #print Dumper $obj;
