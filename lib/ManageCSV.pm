@@ -9,26 +9,33 @@ use Encode qw/encode decode/;
 sub new {
     my $this = shift;
 
-    # constants
-    # my $datapath = '../data/sampledata.csv';
-    # my $csv_encoding = 'Shift_JIS';
-    # my $html_encoding = 'UTF-8';
-    # my $line_splitter = "\n";
-    # my $field_splitter = "\t";
-    # my $ignore_first_line = 1;
-    # my $raw_line_name = '%%__raw__%%';
-    # my $fields = "id\tdate\tuser\tinformation";
-
     my $config = {
-        datapath          => '../data/sampledata.csv',
-        csv_encoding      => 'Shift_JIS',
+        datapath          => '../data/sampledata_euc.dat',
+        csv_encoding      => 'euc-jp',
         html_encoding     => 'UTF-8',
         line_splitter     => "\n",
         field_splitter    => "\t",
-        ignore_first_line => 1,
+        ignore_first_line => 0,
         raw_line_name     => '%%__raw__%%',
-        fields            => "id\tdate\tuser\tinformation",
-        expire_date_field => 0,
+        field_keys        => "expire\ttitle\tuser\tposted\tphone\tsubject\twhat",
+        field_titles      => {  
+                                expire  => '掲載期限',
+                                title   => 'タイトル',
+                                user    => '氏名',
+                                posted  => '投稿日時',
+                                phone   => '電話',
+                                subject => '記事',
+                                what    => 'その他',
+                              },
+        field_type        => {  
+                                expire  => 'text:40',
+                                title   => 'text:80',
+                                user    => 'text:30',
+                                posted  => 'text:40',
+                                phone   => 'text:40',
+                                subject => 'textarea:80:10',
+                                what    => 'text:80',
+                              },        expire_date_field => 'expire',
         csv_data          => undef,
     };
     return bless $config,$this;
@@ -45,10 +52,14 @@ sub read_CSV {
     my @csv_data = ();
     my $counter = 0;
     my $splitter = $this->{field_splitter};
-    
+    my @field_keys = split(/$splitter/, $this->{field_keys});
+
+#    print  Dumper @field_keys;
+
     open(IN, $this->{datapath});
     while(<IN>) {
-        if(($this->{ignore_first_line} == 1) && ($counter++ == 0)) {
+        if(($this->{ignore_first_line} == 1) && ($counter == 0)) {
+            $counter++;
             next;
         }
         chomp;
@@ -56,11 +67,11 @@ sub read_CSV {
         my @linefields = split(/$splitter/, $data);
         my $pos = 0;
         my $line = ();
-        my @fields = split(/$splitter/, $this->{fields});
-        foreach my $f (@fields) {
+        foreach my $f (@field_keys) {
             $line->{$f} = $linefields[$pos++];
         }
         $line->{$this->{raw_line_name}} = $data;
+        $line->{id} = $counter++;
         push @csv_data, $line;
     }
     $this->{csv_data} = \@csv_data;
@@ -73,7 +84,8 @@ sub write_CSV {
     open(OUT, '>' . $this->{datapath});
     
     if($this->{ignore_first_line} == 1) {
-        print OUT $this->{fields} . $this->{line_splitter};
+        my $fields = $this->{field_keys};
+        print OUT $fields . $this->{line_splitter};
     }
     
     foreach my $line (@$csv_data) {
@@ -88,10 +100,10 @@ sub refresh_rawline {
     my $this = shift;
     my $line_data = shift;
     my $splitter = $this->{field_splitter};
+    my @field_keys = split(/$splitter/, $this->{field_keys});
 
-    my @fields = split(/$splitter/, $this->{fields});
     my @buff = ();
-    foreach my $field (@fields) {
+    foreach my $field (@field_keys) {
         push @buff, $line_data->{$field};
     }
     $line_data->{$this->{raw_line_name}} = join($this->{field_splitter}, @buff);
@@ -101,8 +113,30 @@ sub refresh_rawline {
 sub get_fields {
     my $this = shift;
     my $splitter = $this->{field_splitter};
-    my @fields = split(/$splitter/, $this->{fields});
-    return \@fields;
+    my @field_keys = split(/$splitter/, $this->{field_keys});
+    return \@field_keys;
+}
+
+sub get_field_title {
+    my $this = shift;
+    my $key  = shift;
+    my $field_titles = $this->{field_titles};
+    return %$field_titles->{$key};
+}
+
+sub get_field_type {
+    my $this = shift;
+    my $key  = shift;
+    my $field_type = $this->{field_type};
+#print Dumper $field_type;
+
+    my ($type, $width, $height) = split(/:/, $field_type->{$key});
+    my $field_type_def = {
+        type   => $type,
+        width  => $width,
+        height => $height,
+    };
+    return $field_type_def;
 }
 
 sub get_all_lines {
@@ -111,28 +145,33 @@ sub get_all_lines {
     return $csv_data;
 }
 
-sub get_unxpired_lines {
+sub get_unexpired_lines {
     my $this = shift;
     my $csv_data = $this->{csv_data};
-    
+
     my $now = time();
+    my @lines = ();
 
-print Dumper $now;
+    foreach my $d (@$csv_data) {
+        my $expiration = $d->{$this->{expire_date_field}};
+        my ($year, $month, $date) = split (/\//, $expiration);
+        $yaer  = $year - 1900;
+        $month = $month - 1;
+        my $expire = timelocal (59,59,23,$date,$month,$yaer);
+        if($expire >= $now) {
+            push (@lines, $d);
+        }
+    }
 
-my $yaer = 2015 - 1900;
-my $month = 12 - 1;
-my $date  = 2;
-
-    my $expire = timelocal (0,0,0,$date,$month,$yaer);
-
-print Dumper $expire;
-    
-    return $csv_data;
+    return \@lines;
 }
 
-sub get_line {
+sub get_line_by_id {
     my $this = shift;
+    my $id   = shift;
 
+    my $csv_data = $this->{csv_data};
+    return @$csv_data[$id];
 }
 
 

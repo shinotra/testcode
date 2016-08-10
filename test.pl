@@ -8,7 +8,7 @@ use ManageCSV;
 
 my $obj = new ManageCSV();
 
-$obj->set_datapath('data/sampledatas.csv');
+$obj->set_datapath('data/sampledatas_euc.dat');
 $obj->read_CSV;
 
 $obj->get_unxpired_lines();
