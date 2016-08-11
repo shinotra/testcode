@@ -5,6 +5,7 @@ use Data::Dumper;
 use utf8;
 use Encode qw/encode decode/;
 use ManageCSV;
+use ConfigLocal;
 use Params;
 
 print "Content-type: text/html \n\n";
@@ -14,11 +15,11 @@ print "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />
 print "<BODY>";
 
 my $cgi = new Params();
-my $id = %$cgi->{param}->{id};
+my $id = $cgi->{param}->{id};
 
 my $obj = new ManageCSV();
-#$obj->set_datapath('C:\develop\HTDOCS\testcode\data\sampledatas.csv');
-$obj->set_datapath('C:\xampp\htdocs\perl\csv\data\sampledatas_euc.dat');
+my $cnf = new ConfigLocal();
+$obj->set_datapath($cnf->{datapath});
 $obj->read_CSV;
 my $field_keys = $obj->get_fields();
 my $line = $obj->get_line_by_id($id);

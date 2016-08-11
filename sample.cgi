@@ -10,6 +10,7 @@ use ConfigLocal;
 print "Content-type: text/html \n\n";
 print "<?xml version=\"1.0\" encoding=\"UTF-8\">";
 print "<HTML>";
+print "<meta name=\"format-detection\" content=\"telephone=no\">";
 print "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />";
 print "<BODY>";
 
