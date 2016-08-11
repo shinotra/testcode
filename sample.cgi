@@ -5,6 +5,7 @@ use Data::Dumper;
 use utf8;
 use Encode qw/encode decode/;
 use ManageCSV;
+use ConfigLocal;
 
 print "Content-type: text/html \n\n";
 print "<?xml version=\"1.0\" encoding=\"UTF-8\">";
@@ -12,10 +13,13 @@ print "<HTML>";
 print "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />";
 print "<BODY>";
 
+my $cnf = new ConfigLocal();
 my $obj = new ManageCSV();
 
-#$obj->set_datapath('C:\develop\HTDOCS\testcode\data\sampledatas.csv');
-$obj->set_datapath('C:\xampp\htdocs\perl\csv\data\sampledatas_euc.dat');
+$obj->set_datapath($cnf->{datapath});
+
+
+
 $obj->read_CSV;
 
 my $field_keys = $obj->get_fields();

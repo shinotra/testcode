@@ -121,7 +121,7 @@ sub get_field_title {
     my $this = shift;
     my $key  = shift;
     my $field_titles = $this->{field_titles};
-    return %$field_titles->{$key};
+    return $field_titles->{$key};
 }
 
 sub get_field_type {
