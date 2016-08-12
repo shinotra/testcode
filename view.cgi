@@ -15,7 +15,8 @@ print "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />
 print "<BODY>";
 
 my $cgi = new Params();
-my $id = $cgi->{param}->{id};
+my $param = $cgi->get_param();
+my $id = $param->{id};
 
 my $obj = new ManageCSV();
 my $cnf = new ConfigLocal();

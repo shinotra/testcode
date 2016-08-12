@@ -15,13 +15,13 @@ print "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />
 print "<BODY>";
 
 my $cgi = new Params();
-my $param = $cgi->{param};
+my $param = $cgi->get_param();
 my $id = $param->{id};
 my $mode = $param->{mode};
 my $obj = new ManageCSV();
 my $cnf = new ConfigLocal();
-$obj->set_datapath($cnf->{datapath});
 my $field_keys = $obj->get_fields();
+$obj->set_datapath($cnf->{datapath});
 $obj->read_CSV;
 
 if ($mode eq 'edit') {
@@ -97,27 +97,11 @@ if ($mode eq 'edit') {
     $mon += 1;
     my $timestring = sprintf ("%04d/%02d/%02d %02d:%02d:%02d", $year, $mon, $mday, $hour, $min, $sec);
     $data->{$obj->{post_datetime_field}} = $timestring;
-    
-# print Dumper $data;
-# # my $result = $obj->{csv_data};
-# print Dumper @$result;
-# # my @hoge = @$result;
-# # print $#hoge;
-# # print "<hr>";
-
     $obj->insert_line($data, $id);
     $obj->write_CSV;
     print "<FORM action=\"sample.cgi\" method=\"post\" name=\"hogehoge\">";
-#    print "<input type=\"hidden\" name=\"id\" value=\"$id\">";
-#    print "<input type=\"hidden\" name=\"mode\" value=\"edit\">";
     print "<input type=\"submit\" value=\"続ける\">";
     print "</FORM>";
-# my $result = $obj->{csv_data};
-# #print Dumper @$result;
-# my @hoge = @$result;
-# print $#hoge;
-# print "<hr>";
-
 
 } elsif ($mode eq 'append') {
     my $data = ();
@@ -140,26 +124,11 @@ if ($mode eq 'edit') {
     my $timestring = sprintf ("%04d/%02d/%02d %02d:%02d:%02d", $year, $mon, $mday, $hour, $min, $sec);
     $data->{$obj->{post_datetime_field}} = $timestring;
 
-#print $timestring;
-# print Dumper $data;
-# # my $result = $obj->{csv_data};
-# print Dumper @$result;
-# # my @hoge = @$result;
-# # print $#hoge;
-# # print "<hr>";
-
     $obj->append_line($data);
     $obj->write_CSV;
     print "<FORM action=\"sample.cgi\" method=\"post\" name=\"hogehoge\">";
-#    print "<input type=\"hidden\" name=\"id\" value=\"$id\">";
-#    print "<input type=\"hidden\" name=\"mode\" value=\"edit\">";
     print "<input type=\"submit\" value=\"続ける\">";
     print "</FORM>";
-# my $result = $obj->{csv_data};
-# #print Dumper @$result;
-# my @hoge = @$result;
-# print $#hoge;
-# print "<hr>";
 
 } elsif ($mode eq 'delete') {
     $obj->delete_line($id);

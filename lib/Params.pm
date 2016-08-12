@@ -1,13 +1,24 @@
+#######################################
+# POST/GET 処理クラス
+# 
+# @package Params
+# @copyright 2016 Shinohara,Tohru
+# 
+#######################################
 package Params;
 
 use utf8;
 use Data::Dumper;
 use Encode qw/encode decode/;
 
-
+#######################################
+# new
+# コンストラクタ
+# @return bless self
+#######################################
 sub new {
     my $this = shift;
-    my $parameter = $this->get_param();
+    my $parameter = $this->fetch_param();
     
     # uncheck referer or session ??
 
@@ -17,7 +28,13 @@ sub new {
     return bless $param,$this;
 }
 
-sub get_param {
+#######################################
+# fetch_param
+# HTML変数から必要なパラメータを取り出す
+# @return hashref : 取り出したパラメータのハッシュリファレンス
+#######################################
+sub fetch_param {
+    my $this = shift;
     if($ENV{'REQUEST_METHOD'} eq "GET"){
         $buffer = $ENV{'QUERY_STRING'} . '&';
         @pairs = split(/&/,$buffer);
@@ -33,6 +50,16 @@ sub get_param {
         $param_value{$name} = $value;
     }
     return \%param_value
+}
+
+#######################################
+# get_param
+# パラメータを取り出す
+# @return hashref : パラメータのハッシュリファレンス
+#######################################
+sub get_param {
+    my $this = shift;
+    return $this->{param};
 }
 
 
