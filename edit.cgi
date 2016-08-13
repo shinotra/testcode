@@ -67,6 +67,7 @@ if ($mode eq 'edit') {
         if ($field_type->{type} eq 'textarea') {
                 $coldata =~ s/\n/&k/g;
                 $coldata =~ s/\r//g;
+                $coldata =~ s/\t//g;
         }
         $obj->set_data($id, $f, decode($obj->{html_encoding}, $coldata));
     }
@@ -88,6 +89,7 @@ if ($mode eq 'edit') {
         if ($field_type->{type} eq 'textarea') {
                 $coldata =~ s/\n/&k/g;
                 $coldata =~ s/\r//g;
+                $coldata =~ s/\t//g;
         }
         $data->{$f} = decode($obj->{html_encoding}, $coldata);
         
@@ -114,6 +116,7 @@ if ($mode eq 'edit') {
         if ($field_type->{type} eq 'textarea') {
                 $coldata =~ s/\n/&k/g;
                 $coldata =~ s/\r//g;
+                $coldata =~ s/\t//g;
         }
         $data->{$f} = decode($obj->{html_encoding}, $coldata);
         
