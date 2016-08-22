@@ -53,25 +53,31 @@ foreach my $d (@$lines) {
 }
 print "</TABLE>";
 print "<A HREF=\"search.cgi\">検索サンプル</a><br>";
+print "<A HREF=\"download.cgi\">ダウンロード</a><br>";
+print "<HR>";
 
 print "<h1>期限内を表示</h1>";
 my $lines  = $obj->get_unexpired_lines();
-
-print "<TABLE BORDER='1'>";
-foreach my $d (@$lines) {
-    print "<TR>";
-    foreach my $f (@$field_keys) {
-        print "<TD>";
-        if($f eq 'title') {
-            print "<a href=\"view.cgi?id=" . $d->{id} . "\">";
-            print encode($obj->{html_encoding}, $d->{$f});
-            print "</a>";
-        } else {
-            print encode($obj->{html_encoding}, $d->{$f});
+if($#$lines >= 0) {
+    print "<TABLE BORDER='1'>";
+    foreach my $d (@$lines) {
+        print "<TR>";
+        foreach my $f (@$field_keys) {
+            print "<TD>";
+            if($f eq 'title') {
+                print "<a href=\"view.cgi?id=" . $d->{id} . "\">";
+                print encode($obj->{html_encoding}, $d->{$f});
+                print "</a>";
+            } else {
+                print encode($obj->{html_encoding}, $d->{$f});
+            }
+            print "</TD>";
         }
-        print "</TD>";
+        print "</TR>";
     }
-    print "</TR>";
+    print "</TABLE>";
+} else {
+    print encode($obj->{html_encoding}, "データがありません。");
 }
-print "</TABLE>";
+
 print "</BODY></HTML>";

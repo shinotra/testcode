@@ -349,5 +349,30 @@ sub set_data {
     $this->refresh_rawline($line_number);
 }
 
+#######################################
+# download_csv
+# ファイル名をダウンロードする
+# @param $fname string : ファイル名
+#######################################
+sub download_csv {
+    my $this = shift;
+    my $fname = shift;
+    open (DF, $this->{datapath}) or die "cannot open '$!'";
+
+    print "Content-type: application/octet-stream; name=\"$fname\"\n";
+    print "Expires: 0\n";
+    print "Cache-Control: must-revalidate, post-check=0,pre-check=0\n";
+    print "Pragma: private\n";
+    print "Content-Disposition: attachment; filename=\"$fname\"\n";
+    print "\n";
+
+    binmode(DF);
+    binmode(STDOUT);
+    while(<DF>) {print;}
+    close(DF);
+}
+
+
+
 1;
 __END__
